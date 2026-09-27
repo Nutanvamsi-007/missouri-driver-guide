@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Missouri Driver Guide | Interactive Study Portal & Exam Simulator</title>
+  
+  <!-- Primary Meta Tags -->
+  <meta name="title" content="Missouri Driver Guide | Interactive Study Portal & Exam Simulator" />
+  <meta name="description" content="Master the official Missouri Department of Revenue (DOR) Driver Guide. Features all 16 chapters, 102 pages, official 25-question permit exam simulator, 80+ 3D road sign flashcards, and stopping distance calculators." />
+  <meta name="keywords" content="missouri driver guide, missouri permit test, missouri driver license test, missouri dor practice test, missouri driver manual, mshp permit test, road signs flashcards, stopping distance calculator" />
+  <meta name="author" content="Missouri Driver Guide Interactive System" />
+  <meta name="robots" content="index, follow" />
+  <meta name="theme-color" content="#0b1120" />
+  <meta name="color-scheme" content="dark light" />
+  
+  <!-- iOS & PWA Mobile Tags -->
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="MO Driver Guide" />
+  <meta name="application-name" content="MO Driver Guide" />
+
+  <!-- Favicons & App Icons -->
+  <link rel="icon" type="image/svg+xml" href="assets/icons/favicon.svg" />
+  <link rel="icon" type="image/png" sizes="32x32" href="assets/icons/favicon-32x32.png" />
+  <link rel="icon" type="image/png" sizes="16x16" href="assets/icons/favicon-16x16.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="assets/icons/apple-touch-icon.png" />
+  <link rel="shortcut icon" href="favicon.ico" />
+  <link rel="manifest" href="manifest.webmanifest" />
+
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Missouri Driver Guide" />
+  <meta property="og:title" content="Missouri Driver Guide | Interactive Study Portal & Exam Simulator" />
+  <meta property="og:description" content="Master the official Missouri DOR Driver Guide with all 16 chapters, 102 handbook pages, 25-question permit exam simulator, 80+ 3D sign flashcards, and stopping distance physics calculators." />
+  <meta property="og:image" content="assets/images/og-image.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:type" content="image/png" />
+  <meta property="og:locale" content="en_US" />
+
+  <!-- Twitter / X -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Missouri Driver Guide | Interactive Study Portal & Exam Simulator" />
+  <meta name="twitter:description" content="Master the official Missouri DOR Driver Guide with all 16 chapters, 102 handbook pages, 25-question permit exam simulator, 80+ 3D sign flashcards, and stopping distance physics calculators." />
+  <meta name="twitter:image" content="assets/images/og-image.png" />
+
+  <!-- Google Fonts Preconnect for Premium Modern Typography -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Outfit:wght@600;700;800;900&display=swap" rel="stylesheet" />
+
+  <!-- Stylesheet -->
+  <link rel="stylesheet" href="styles.css" />
+
+  <!-- Schema.org Educational & App Structured Data (JSON-LD) -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "WebApplication",
+        "name": "Missouri Driver Guide Interactive Study Portal",
+        "applicationCategory": "EducationalApplication",
+        "operatingSystem": "All",
+        "browserRequirements": "Requires JavaScript. Requires HTML5.",
+        "description": "Interactive study portal and 25-question practice exam simulator for the Missouri DOR Driver Guide.",
+        "offers": {
+          "@type": "Offer",
+          "price": "0",
+          "priceCurrency": "USD"
+        }
+      },
+      {
+        "@type": "LearningResource",
+        "name": "Missouri DOR Driver Guide Examination Preparation",
+        "educationalLevel": "Beginner to Intermediate Driver",
+        "learningResourceType": "Exam Practice and Interactive Study Guide",
+        "inLanguage": "en-US",
+        "teaches": "Missouri Motor Vehicle Laws, Traffic Signs, Right of Way, Road Safety"
+      }
+    ]
+  }
+  </script>
+
+  <!-- Preload core data -->
+  <script src="data.js"></script>
+</head>
+<body>
+
+  <!-- Site Navigation Header -->
+  <header class="site-header">
+    <div class="brand-wrapper" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
+      <div class="brand-badge">MO</div>
+      <div class="brand-title">
+        <div class="brand-name">
+          Missouri Driver Guide
+          <span class="brand-badge-mo">Official DOR</span>
+        </div>
+        <div class="brand-subtitle">Interactive Study System & Exam Simulator</div>
+      </div>
+    </div>
+
+    <!-- Navigation Tabs -->
+    <nav class="nav-tabs">
+      <button class="nav-tab-btn active" data-tab="reader">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+        Handbook Reader
+      </button>
+      <button class="nav-tab-btn" data-tab="exam">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"></path><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg>
+        Exam Simulator
+      </button>
+      <button class="nav-tab-btn" data-tab="signs">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 2 22 22 22"></polygon></svg>
+        Signs & Flashcards
+      </button>
+      <button class="nav-tab-btn" data-tab="calculators">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="16" height="16" rx="2"></rect><line x1="8" y1="12" x2="16" y2="12"></line><line x1="12" y1="8" x2="12" y2="16"></line></svg>
+        Simulators & Rules
+      </button>
+      <button class="nav-tab-btn" data-tab="pdf-mirror">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+        102 PDF Pages
+      </button>
+    </nav>
+
+    <!-- Header Actions -->
+    <div class="header-actions">
+      <button class="search-trigger-btn">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+        <span>Search manual...</span>
+        <span class="kbd-shortcut">⌘K</span>
+      </button>
+      <button class="theme-toggle-btn" id="theme-toggle-btn" title="Toggle theme">
+        <!-- Injected via app.js -->
+      </button>
+    </div>
+  </header>
+
+  <!-- Attention-Seeking Hero Banner -->
+  <section class="hero-banner">
+    <div class="hero-glass">
+      <div class="hero-content">
+        <div class="hero-pill">
+          <span class="pulse-dot"></span>
+          Revised 2026 Missouri Department of Revenue Edition
+        </div>
+        <h1 class="hero-title">
+          Master the <span class="gradient-text">Missouri Driver Manual</span> Fast & Interactively
+        </h1>
+        <p class="hero-desc">
+          All 102 pages, 16 chapters, and 70+ official traffic signs converted into a high-speed, attention-seeking study platform. Take authentic 25-question permit exams, master 3D sign flashcards, and inspect official PDF pages with zero latency.
+        </p>
+        <div class="hero-actions">
+          <button class="btn-primary" id="hero-exam-btn">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+            Take 25-Question Practice Exam
+          </button>
+          <button class="btn-secondary" id="hero-read-btn">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg>
+            Read Handbook
+          </button>
+          <button class="btn-secondary" id="hero-signs-btn">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 14 14"></polyline></svg>
+            Study Road Signs
+          </button>
+        </div>
+      </div>
+
+      <!-- Quick Stats Counter -->
+      <div class="hero-stats-grid">
+        <div class="stat-item">
+          <span class="stat-val">102</span>
+          <span class="stat-label">Official PDF Pages</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-val">16</span>
+          <span class="stat-label">Full Chapters</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-val">73+</span>
+          <span class="stat-label">Signs & Diagrams</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-val">20/25</span>
+          <span class="stat-label">Passing Standard (80%)</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-val">100%</span>
+          <span class="stat-label">Offline & Instant</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Main Content Container -->
+  <main class="main-content">
+
+    <!-- ======================================================== -->
+    <!-- TAB 1: Handbook Reader View                               -->
+    <!-- ======================================================== -->
+    <div class="tab-pane active" id="tab-reader">
+      <div class="reader-layout">
+        <!-- Sidebar Navigation -->
+        <aside class="reader-sidebar">
+          <div class="sidebar-heading">
+            <span>Table of Contents</span>
+            <span style="font-size:0.75rem; color:var(--text-accent);">16 Chapters</span>
+          </div>
+          <ul class="chapter-nav-list" id="chapter-nav-list">
+            <!-- Injected via app.js -->
+          </ul>
+        </aside>
+
+        <!-- Main Reader Panel -->
+        <article class="reader-main">
+          <!-- Reader Toolbar -->
+          <div class="reader-toolbar">
+            <div class="reader-breadcrumbs">
+              <span>Missouri Driver Guide</span>
+              <span>/</span>
+              <span id="current-chapter-breadcrumb" style="color:var(--text-primary); font-weight:600;">Chapter</span>
+            </div>
+            <div class="reader-controls">
+              <button class="control-btn" id="font-decrease-btn" title="Decrease font size">A-</button>
+              <button class="control-btn" id="font-increase-btn" title="Increase font size">A+</button>
+            </div>
+          </div>
+
+          <!-- Dynamic Chapter Content -->
+          <div id="reader-chapter-content">
+            <!-- Injected via app.js -->
+          </div>
+        </article>
+      </div>
+    </div>
+
+    <!-- ======================================================== -->
+    <!-- TAB 2: Missouri Practice Exam Simulator                   -->
+    <!-- ======================================================== -->
+    <div class="tab-pane" id="tab-exam">
+      <div class="exam-container" id="exam-stage-container">
+        <!-- Injected via app.js -->
+      </div>
+    </div>
+
+    <!-- ======================================================== -->
+    <!-- TAB 3: Road Signs & 3D Flashcards                         -->
+    <!-- ======================================================== -->
+    <div class="tab-pane" id="tab-signs">
+      <div class="signs-header-bar">
+        <div>
+          <h2 style="font-size:1.75rem; font-weight:800; margin-bottom:0.25rem;">Missouri Road Signs Lab & 3D Flashcards</h2>
+          <p style="color:var(--text-secondary); font-size:0.92rem;">
+            Click or tap any card to flip and test your knowledge of shapes, regulatory signs, warnings, and work zones.
+          </p>
+        </div>
+        <div class="signs-category-pills" id="signs-category-pills">
+          <!-- Injected via app.js -->
+        </div>
+      </div>
+
+      <div class="flashcards-grid" id="flashcards-grid">
+        <!-- Injected via app.js -->
+      </div>
+    </div>
+
+    <!-- ======================================================== -->
+    <!-- TAB 4: Interactive Calculators & Simulators               -->
+    <!-- ======================================================== -->
+    <div class="tab-pane" id="tab-calculators">
+      <h2 style="font-size:1.75rem; font-weight:800; margin-bottom:0.5rem;">Interactive Rules & Safety Simulators</h2>
+      <p style="color:var(--text-secondary); font-size:0.95rem; margin-bottom:2rem;">
+        Visualize Missouri driving physics, legal point penalties, BAC limits, and distracted driving laws.
+      </p>
+
+      <div class="simulators-grid">
+        <!-- Stopping Distance Calculator -->
+        <div class="sim-card">
+          <div class="sim-card-header">
+            <div class="sim-icon-box">🛑</div>
+            <div>
+              <h3 class="sim-title">Speed & Stopping Distance Calculator</h3>
+              <span style="font-size:0.75rem; color:var(--text-accent);">Missouri Guide Chapter 8</span>
+            </div>
+          </div>
+          <p class="sim-desc">
+            At higher speeds, total stopping distance expands dramatically. Reaction distance + braking distance = total feet required to stop.
+          </p>
+
+          <div class="speed-slider-wrap">
+            <div class="speed-display">
+              <span style="font-size:0.9rem; font-weight:600; color:var(--text-secondary);">Vehicle Speed:</span>
+              <span class="speed-num" id="calc-speed-num">55 mph</span>
+            </div>
+            <input type="range" min="20" max="75" step="5" value="55" class="custom-range" id="calc-speed-slider" aria-label="Vehicle Speed Slider" />
+          </div>
+
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem;">
+            <label for="calc-road-cond" style="font-size:0.85rem; font-weight:600; color:var(--text-secondary);">Road Surface Condition:</label>
+            <select id="calc-road-cond" aria-label="Road Surface Condition" style="background:var(--bg-elevated); color:var(--text-primary); border:1px solid var(--border-color); padding:0.4rem 0.8rem; border-radius:var(--radius-sm); font-family:inherit;">
+              <option value="dry">Dry Pavement (Normal)</option>
+              <option value="wet">Wet Pavement (Rain / Slick)</option>
+            </select>
+          </div>
+
+          <div class="stopping-bars-container">
+            <div class="distance-bar-row">
+              <div class="bar-meta">
+                <span style="color:var(--mo-gold);">Reaction Distance (1.5s thinking):</span>
+                <span id="dist-reaction-val">121 ft</span>
+              </div>
+              <div class="bar-track">
+                <div class="bar-fill-reaction" id="bar-fill-reaction" style="width:24%;"></div>
+              </div>
+            </div>
+
+            <div class="distance-bar-row">
+              <div class="bar-meta">
+                <span style="color:var(--mo-red);">Braking Distance (Physical friction):</span>
+                <span id="dist-braking-val">140 ft</span>
+              </div>
+              <div class="bar-track">
+                <div class="bar-fill-braking" id="bar-fill-braking" style="width:28%;"></div>
+              </div>
+            </div>
+
+            <div class="distance-bar-row" style="margin-top:0.5rem; padding-top:0.5rem; border-top:1px solid var(--border-color);">
+              <div class="bar-meta">
+                <strong style="color:var(--text-primary);">Total Stopping Distance:</strong>
+                <strong id="dist-total-val" style="color:var(--text-accent);">261 ft (~17 car lengths)</strong>
+              </div>
+              <div class="bar-track" style="height:18px;">
+                <div class="bar-fill-total" id="bar-fill-total" style="width:52%;"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Missouri Point System Tracker -->
+        <div class="sim-card">
+          <div class="sim-card-header">
+            <div class="sim-icon-box">⚠️</div>
+            <div>
+              <h3 class="sim-title">Missouri Point System Penalty Tracker</h3>
+              <span style="font-size:0.75rem; color:var(--text-accent);">Missouri Guide Chapter 11</span>
+            </div>
+          </div>
+          <p class="sim-desc">
+            Check off typical traffic convictions to see how quickly points accumulate towards official suspension or revocation.
+          </p>
+
+          <div class="violations-checklist" id="points-violations-list">
+            <!-- Injected via app.js -->
+          </div>
+
+          <div class="points-gauge-card">
+            <div style="font-size:0.85rem; color:var(--text-secondary); margin-bottom:0.25rem;">Accumulated Missouri Points:</div>
+            <div class="points-total-num" id="points-total-num">0</div>
+            <div class="points-status-badge status-safe" id="points-status-badge">✓ License in Good Standing</div>
+            <p style="font-size:0.75rem; color:var(--text-muted); margin-top:0.75rem;">
+              • 4 pts: Advisory Notice &nbsp;|&nbsp; • 8 pts in 18 mo: 30-90 Day Suspension &nbsp;|&nbsp; • 12 pts in 12 mo: 1-Year Revocation
+            </p>
+          </div>
+        </div>
+
+        <!-- BAC Legal Limits & Zero Tolerance -->
+        <div class="sim-card">
+          <div class="sim-card-header">
+            <div class="sim-icon-box">⚖️</div>
+            <div>
+              <h3 class="sim-title">Blood Alcohol Concentration (BAC) Limits</h3>
+              <span style="font-size:0.75rem; color:var(--text-accent);">Missouri Guide Chapter 10</span>
+            </div>
+          </div>
+          <p class="sim-desc">
+            Missouri strictly enforces tiered statutory BAC limits with automatic administrative license actions:
+          </p>
+          <div style="display:flex; flex-direction:column; gap:0.85rem;">
+            <div style="background:var(--bg-elevated); border-left:4px solid var(--mo-gold); padding:0.85rem; border-radius:var(--radius-sm);">
+              <div style="display:flex; justify-content:space-between; font-weight:700;">
+                <span>Under 21 (Zero Tolerance)</span>
+                <span style="color:var(--mo-gold);">.02% BAC</span>
+              </div>
+              <p style="font-size:0.82rem; color:var(--text-secondary); margin-top:0.25rem;">
+                Any measurable alcohol triggers immediate suspension or revocation under Missouri's Zero Tolerance law.
+              </p>
+            </div>
+
+            <div style="background:var(--bg-elevated); border-left:4px solid #38bdf8; padding:0.85rem; border-radius:var(--radius-sm);">
+              <div style="display:flex; justify-content:space-between; font-weight:700;">
+                <span>Commercial Driver (CDL / Class E)</span>
+                <span style="color:#38bdf8;">.04% BAC</span>
+              </div>
+              <p style="font-size:0.82rem; color:var(--text-secondary); margin-top:0.25rem;">
+                Operating a commercial vehicle at .04% or higher leads to 1-year CDL disqualification.
+              </p>
+            </div>
+
+            <div style="background:var(--bg-elevated); border-left:4px solid var(--mo-red); padding:0.85rem; border-radius:var(--radius-sm);">
+              <div style="display:flex; justify-content:space-between; font-weight:700;">
+                <span>Adult Drivers (21 and older)</span>
+                <span style="color:var(--mo-red);">.08% BAC</span>
+              </div>
+              <p style="font-size:0.82rem; color:var(--text-secondary); margin-top:0.25rem;">
+                Legal limit for intoxication. 1st conviction: 30-day suspension + 60-day restricted permit + criminal record.
+              </p>
+            </div>
+
+            <div style="background:rgba(239,68,68,0.1); border:1px solid rgba(239,68,68,0.3); padding:0.85rem; border-radius:var(--radius-sm);">
+              <strong style="color:var(--mo-red); font-size:0.85rem;">Implied Consent Law:</strong>
+              <p style="font-size:0.8rem; color:var(--text-secondary); margin-top:0.2rem;">
+                Refusal to submit to a chemical test of breath/blood/saliva results in an <strong>immediate 1-year license revocation</strong> and mandatory ignition interlock device (IID).
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Siddens Bening Hands-Free Law Guide -->
+        <div class="sim-card">
+          <div class="sim-card-header">
+            <div class="sim-icon-box">📵</div>
+            <div>
+              <h3 class="sim-title">Siddens Bening Hands-Free Law (SB 398)</h3>
+              <span style="font-size:0.75rem; color:var(--text-accent);">Missouri Guide Chapter 16</span>
+            </div>
+          </div>
+          <p class="sim-desc">
+            Missouri's statewide hands-free law prohibits drivers from physically holding electronic communication devices.
+          </p>
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.75rem;">
+            <div style="background:rgba(239,68,68,0.1); border:1px solid rgba(239,68,68,0.3); padding:0.85rem; border-radius:var(--radius-sm);">
+              <strong style="color:var(--mo-red); font-size:0.85rem; display:block; margin-bottom:0.4rem;">🚫 Strictly Prohibited</strong>
+              <ul style="font-size:0.78rem; color:var(--text-secondary); padding-left:1rem; line-height:1.4;">
+                <li>Holding a phone in hand or supporting with body</li>
+                <li>Typing, sending, or reading text messages</li>
+                <li>Watching or recording video</li>
+                <li>Reaching for a phone that requires leaving seat</li>
+              </ul>
+            </div>
+            <div style="background:rgba(16,185,129,0.1); border:1px solid rgba(16,185,129,0.3); padding:0.85rem; border-radius:var(--radius-sm);">
+              <strong style="color:var(--mo-green); font-size:0.85rem; display:block; margin-bottom:0.4rem;">✓ Permitted Uses</strong>
+              <ul style="font-size:0.78rem; color:var(--text-secondary); padding-left:1rem; line-height:1.4;">
+                <li>Hands-free voice-to-text / Siri / Google</li>
+                <li>Mounted navigation / GPS routing</li>
+                <li>Bluetooth single-tap to answer</li>
+                <li>Emergency 911 calls</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ======================================================== -->
+    <!-- TAB 5: All 102 PDF Pages Mirror                           -->
+    <!-- ======================================================== -->
+    <div class="tab-pane" id="tab-pdf-mirror">
+      <div style="margin-bottom:1.5rem;">
+        <h2 style="font-size:1.75rem; font-weight:800; margin-bottom:0.25rem;">Official Missouri Driver Guide (All 102 Pages)</h2>
+        <p style="color:var(--text-secondary); font-size:0.95rem;">
+          Every page from the official state manual rendered in high-resolution WebP. Click any page to inspect the original layout and vector artwork in high detail.
+        </p>
+      </div>
+
+      <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(130px, 1fr)); gap:1rem;" id="pdf-mirror-pages-grid">
+        <!-- Injected via app.js -->
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Global Full-Text Search Modal (Cmd+K / /) -->
+  <div class="modal-backdrop" id="search-modal">
+    <div class="search-dialog" role="dialog" aria-modal="true" aria-labelledby="search-input">
+      <div class="search-input-wrap">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+        <input type="text" class="search-main-input" id="search-main-input" aria-label="Search Missouri Driver Manual" placeholder="Search laws, speed limits, parking, signs, points..." autocomplete="off" />
+        <button class="kbd-shortcut" id="close-search-btn">ESC</button>
+      </div>
+      <div class="search-results-list" id="search-results-list">
+        <!-- Injected via app.js -->
+      </div>
+    </div>
+  </div>
+
+  <!-- PDF High-Res Original Page Mirror Lightbox -->
+  <div class="mirror-modal" id="mirror-modal">
+    <div class="mirror-dialog" role="dialog" aria-modal="true">
+      <div class="mirror-header">
+        <div>
+          <strong id="mirror-modal-title" style="font-size:1.1rem;">Official Missouri Driver Guide</strong>
+          <div id="mirror-modal-page" style="font-size:0.8rem; color:var(--text-accent);">Page 1 of 102</div>
+        </div>
+        <button class="btn-secondary" id="close-mirror-btn" style="padding:0.35rem 0.9rem;">✕ Close</button>
+      </div>
+      <div class="mirror-body">
+        <img src="" id="mirror-modal-img" class="mirror-img" alt="Official PDF Page Mirror" />
+      </div>
+    </div>
+  </div>
+
+  <!-- Site Footer -->
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div style="font-weight:700; color:var(--text-primary);">
+        Missouri Department of Revenue (DOR) Driver Guide Interactive Study System
+      </div>
+      <p style="max-width:700px; line-height:1.6;">
+        Source: State of Missouri Driver Guide (Form DOR-4152). This interactive application was engineered to provide high-speed, offline-ready studying with complete statutory accuracy.
+      </p>
+      <div style="font-size:0.8rem; color:var(--text-muted);">
+        All 102 pages & 73 graphical assets extracted directly from source PDF &bull; 100% Client-Side &bull; Press <strong>⌘K</strong> or <strong>/</strong> to search
+      </div>
+    </div>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>

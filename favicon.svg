@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <defs>
+    <linearGradient id="moGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0b2545" />
+      <stop offset="100%" stop-color="#0284c7" />
+    </linearGradient>
+    <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f59e0b" />
+      <stop offset="100%" stop-color="#fbbf24" />
+    </linearGradient>
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#000000" flood-opacity="0.45" />
+    </filter>
+  </defs>
+  <!-- Background Rounded Shield -->
+  <rect x="16" y="16" width="480" height="480" rx="108" fill="url(#moGrad)" stroke="#f59e0b" stroke-width="12" filter="url(#shadow)" />
+  
+  <!-- Outer Highway Shield Outline -->
+  <path d="M 120,95 L 392,95 C 410,180 435,270 380,360 C 335,420 256,450 256,450 C 256,450 177,420 132,360 C 77,270 102,180 120,95 Z" 
+        fill="rgba(15,23,42,0.6)" stroke="url(#goldGrad)" stroke-width="14" stroke-linejoin="round" />
+  
+  <!-- MO State Text -->
+  <text x="256" y="175" font-family="-apple-system, 'Inter', 'Segoe UI', Arial, sans-serif" font-size="72" font-weight="900" fill="#f8fafc" text-anchor="middle" letter-spacing="6">MISSOURI</text>
+  
+  <!-- Inner Highway Badge with Steering Wheel / Car Silhouette -->
+  <!-- Road lines -->
+  <polygon points="210,380 302,380 270,250 242,250" fill="#38bdf8" opacity="0.4" />
+  <!-- Center dashed line -->
+  <line x1="256" y1="260" x2="256" y2="370" stroke="#f59e0b" stroke-width="6" stroke-dasharray="16 10" stroke-linecap="round" />
+  
+  <!-- Car Silhouette -->
+  <g transform="translate(196, 215) scale(0.24)">
+    <path d="M100 280 C60 280 40 250 50 220 L80 140 C95 100 130 80 180 80 L320 80 C370 80 405 100 420 140 L450 220 C460 250 440 280 400 280 L380 280 C380 310 355 330 325 330 C295 330 275 310 275 280 L225 280 C225 310 205 330 175 330 C145 330 120 310 120 280 Z" fill="#ffffff" />
+    <path d="M105 150 L395 150 L370 105 C360 95 340 90 320 90 L180 90 C160 90 140 95 130 105 Z" fill="#0b2545" />
+    <!-- Headlights -->
+    <circle cx="95" cy="220" r="22" fill="#fbbf24" />
+    <circle cx="405" cy="220" r="22" fill="#fbbf24" />
+  </g>
+  
+  <!-- Bottom Pill: 2026 -->
+  <rect x="186" y="396" width="140" height="34" rx="17" fill="#f59e0b" />
+  <text x="256" y="420" font-family="-apple-system, 'Inter', Arial, sans-serif" font-size="20" font-weight="900" fill="#0b2545" text-anchor="middle" letter-spacing="2">DOR 2026</text>
+</svg>

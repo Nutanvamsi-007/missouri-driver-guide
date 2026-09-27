@@ -1,0 +1,74 @@
+{
+  "name": "Missouri Driver Guide & Permit Exam Simulator",
+  "short_name": "MO Driver Guide",
+  "description": "Complete interactive study system for the Missouri DOR Driver Guide with 25-question permit exam simulator, 3D flashcards, and stopping distance calculators.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#0b1120",
+  "theme_color": "#0b1120",
+  "lang": "en-US",
+  "categories": [
+    "education",
+    "utilities",
+    "reference"
+  ],
+  "icons": [
+    {
+      "src": "assets/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "assets/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "assets/icons/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Permit Exam Simulator",
+      "short_name": "Exam",
+      "description": "Take the 25-question Missouri permit test",
+      "url": "./index.html#exam",
+      "icons": [
+        {
+          "src": "assets/icons/icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
+      "name": "Road Signs Flashcards",
+      "short_name": "Signs",
+      "description": "Study 80+ official Missouri traffic signs",
+      "url": "./index.html#signs",
+      "icons": [
+        {
+          "src": "assets/icons/icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
+      "name": "Handbook Reader",
+      "short_name": "Handbook",
+      "description": "Read all 16 chapters of the Missouri manual",
+      "url": "./index.html#reader",
+      "icons": [
+        {
+          "src": "assets/icons/icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
+    }
+  ]
+}
