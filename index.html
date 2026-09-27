@@ -2,7 +2,7 @@
 <html lang="en" data-theme="dark">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <title>Missouri Driver Guide | Interactive Study Portal & Exam Simulator</title>
   
   <!-- Primary Meta Tags -->
@@ -201,9 +201,21 @@
     <!-- TAB 1: Handbook Reader View                               -->
     <!-- ======================================================== -->
     <div class="tab-pane active" id="tab-reader">
+      <!-- Mobile Chapter Dropdown Bar -->
+      <div class="mobile-chapter-selector-bar">
+        <button class="mobile-chapter-trigger-btn" id="mobile-chapter-trigger-btn" aria-expanded="false" aria-label="Toggle Chapter Table of Contents">
+          <span class="mobile-ch-icon">📚</span>
+          <div class="mobile-ch-info">
+            <span class="mobile-ch-label">CHAPTER MENU</span>
+            <strong class="mobile-ch-title" id="mobile-current-chapter-title">Chapter 1: The Missouri Driver License</strong>
+          </div>
+          <svg class="mobile-ch-chevron" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg>
+        </button>
+      </div>
+
       <div class="reader-layout">
         <!-- Sidebar Navigation -->
-        <aside class="reader-sidebar">
+        <aside class="reader-sidebar" id="reader-sidebar">
           <div class="sidebar-heading">
             <span>Table of Contents</span>
             <span style="font-size:0.75rem; color:var(--text-accent);">16 Chapters</span>

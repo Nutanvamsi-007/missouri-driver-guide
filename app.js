@@ -143,6 +143,15 @@
         state.currentChapterId = ch.id;
         renderReaderSidebar();
         renderCurrentChapter();
+
+        // Collapse mobile chapter drawer if open
+        const sidebar = document.getElementById('reader-sidebar');
+        const trigger = document.getElementById('mobile-chapter-trigger-btn');
+        if (sidebar && window.innerWidth <= 900) {
+          sidebar.classList.remove('open');
+          if (trigger) trigger.classList.remove('active');
+        }
+
         window.scrollTo({ top: 120, behavior: 'smooth' });
       });
 
@@ -162,6 +171,12 @@
     }
 
     const isBookmarked = state.bookmarks.includes(ch.id);
+
+    // Update mobile chapter title if present
+    const mobileChTitle = document.getElementById('mobile-current-chapter-title');
+    if (mobileChTitle) {
+      mobileChTitle.textContent = `${ch.number === 0 ? 'Intro' : (ch.number > 16 ? 'Reference' : `Chapter ${ch.number}`)}: ${ch.title}`;
+    }
 
     // Build Chapter HTML
     let html = `
@@ -1120,6 +1135,17 @@
         localStorage.setItem('mo_guide_font_size', state.fontSize);
         const bodyEl = document.querySelector('.chapter-body');
         if (bodyEl) bodyEl.style.fontSize = `${state.fontSize}px`;
+      });
+    }
+
+    // Mobile chapter menu toggle
+    const mobileChTrigger = document.getElementById('mobile-chapter-trigger-btn');
+    const readerSidebar = document.getElementById('reader-sidebar');
+    if (mobileChTrigger && readerSidebar) {
+      mobileChTrigger.addEventListener('click', () => {
+        const isOpen = readerSidebar.classList.toggle('open');
+        mobileChTrigger.classList.toggle('active', isOpen);
+        mobileChTrigger.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
       });
     }
 
