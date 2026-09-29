@@ -356,42 +356,53 @@
   // -------------------------------------------------------------
   // Studio AI Audio Player & Narration Suite
   // -------------------------------------------------------------
-  const CHAPTER_AUDIO_TRACKS = {
-    'chapter-1': [
-      {
-        id: 'cram',
-        badge: '⚡ High Yield',
-        title: '3-Min Exam Cram Podcast',
-        voice: 'Guy (AI Neural)',
-        src: 'assets/audio/samples/chapter1_cram_podcast_guy.mp3',
-        desc: 'Fast-paced review of tested permit ages, curfew & GDL restrictions.'
-      },
-      {
-        id: 'andrew',
-        badge: '🎙️ Voice A',
-        title: 'Andrew (Conversational Male)',
-        voice: 'Andrew (AI Neural)',
-        src: 'assets/audio/samples/chapter1_narration_andrew.mp3',
-        desc: 'Natural educator narration curated for smooth listening.'
-      },
-      {
-        id: 'jenny',
-        badge: '🎙️ Voice B',
-        title: 'Jenny (Clear Female)',
-        voice: 'Jenny (AI Neural)',
-        src: 'assets/audio/samples/chapter1_narration_jenny.mp3',
-        desc: 'Warm, articulate teacher narration with natural inflection.'
-      },
+  const AI_AUDIO_CHAPTER_IDS = new Set([
+    'intro', 'chapter-1', 'chapter-2', 'chapter-3', 'chapter-4', 'chapter-5',
+    'chapter-6', 'chapter-7', 'chapter-8', 'chapter-9', 'chapter-10', 'chapter-11',
+    'chapter-12', 'chapter-13', 'chapter-14', 'chapter-15', 'chapter-16'
+  ]);
+
+  function getChapterAudioTracks(ch) {
+    if (ch && AI_AUDIO_CHAPTER_IDS.has(ch.id)) {
+      return [
+        {
+          id: 'cram',
+          badge: '⚡ High Yield',
+          title: '3-Min Exam Cram',
+          voice: 'Guy (AI Neural)',
+          src: `assets/audio/chapters/${ch.id}_cram.mp3`,
+          desc: 'High-energy audio review of tested numbers, rules, fines & state exam questions.'
+        },
+        {
+          id: 'narration',
+          badge: '🎙️ Full Lesson',
+          title: 'Chapter Narration',
+          voice: 'Jenny (AI Neural)',
+          src: `assets/audio/chapters/${ch.id}_narration.mp3`,
+          desc: 'Comprehensive, natural educator narration covering core handbook concepts.'
+        },
+        {
+          id: 'browser',
+          badge: '🤖 Live Voice',
+          title: 'Device Synthesizer',
+          voice: 'System Web Speech',
+          src: null,
+          desc: 'Interactive device speech synthesizer with Missouri statutory abbreviation expansion.'
+        }
+      ];
+    }
+
+    return [
       {
         id: 'browser',
-        badge: '🤖 Fallback',
-        title: 'Browser Web Speech (Old)',
-        voice: 'Device Synthesizer',
+        badge: '🤖 Live Voice',
+        title: 'Device Synthesizer',
+        voice: 'System Web Speech',
         src: null,
-        desc: 'Original browser text-to-speech for side-by-side comparison.'
+        desc: 'Interactive device speech synthesizer with Missouri statutory abbreviation expansion.'
       }
-    ]
-  };
+    ];
+  }
 
   function normalizeTextForSpeech(text) {
     if (!text) return '';
@@ -431,17 +442,7 @@
   }
 
   function renderAudioStudioMarkup(ch) {
-    const tracks = CHAPTER_AUDIO_TRACKS[ch.id] || [
-      {
-        id: 'browser',
-        badge: '🔊 Audio Narration',
-        title: 'Enhanced Chapter Audio',
-        voice: 'Smart Web Speech',
-        src: null,
-        desc: 'Listen to this chapter with text normalization and enhanced pacing.'
-      }
-    ];
-
+    const tracks = getChapterAudioTracks(ch);
     const currentTrack = tracks.find(t => t.id === state.audioTrackId) || tracks[0];
 
     return `
@@ -522,17 +523,7 @@
   }
 
   function bindAudioStudioControls(ch) {
-    const tracks = CHAPTER_AUDIO_TRACKS[ch.id] || [
-      {
-        id: 'browser',
-        badge: '🔊 Audio Narration',
-        title: 'Enhanced Chapter Audio',
-        voice: 'Smart Web Speech',
-        src: null,
-        desc: 'Listen to this chapter with text normalization and enhanced pacing.'
-      }
-    ];
-
+    const tracks = getChapterAudioTracks(ch);
     let currentTrack = tracks.find(t => t.id === state.audioTrackId) || tracks[0];
 
     const playBtn = document.getElementById('audio-main-play-btn');
@@ -547,7 +538,7 @@
     // Setup Audio Element for MP3
     const audio = state.audioElement;
     if (currentTrack.src) {
-      if (audio.src !== window.location.origin + '/' + currentTrack.src) {
+      if (!audio.src || !audio.src.endsWith(currentTrack.src)) {
         audio.src = currentTrack.src;
         audio.playbackRate = state.audioSpeed;
       }
