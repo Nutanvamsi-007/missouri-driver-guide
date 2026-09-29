@@ -627,7 +627,258 @@ h1, h2, h3, h4, .brand-name, .hero-title, .stat-val {
   border-color: var(--primary);
 }
 
-/* Audio Narration Bar */
+/* ==========================================================================
+   Studio AI Audio Player & Narration Suite
+   ========================================================================== */
+.audio-studio-card {
+  background: linear-gradient(145deg, rgba(15, 23, 42, 0.95), rgba(11, 37, 69, 0.85));
+  border: 1px solid rgba(2, 132, 199, 0.35);
+  border-radius: var(--radius-lg);
+  padding: 1.25rem 1.5rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35), 0 0 20px rgba(2, 132, 199, 0.15);
+  backdrop-filter: blur(12px);
+  position: relative;
+  overflow: hidden;
+}
+
+.audio-studio-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.audio-studio-title-group {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.audio-studio-icon-badge {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, var(--primary), var(--mo-blue));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+  box-shadow: 0 2px 8px rgba(2, 132, 199, 0.3);
+}
+
+.audio-studio-title {
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: #fff;
+  letter-spacing: -0.2px;
+}
+
+.audio-studio-sub {
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+}
+
+.audio-studio-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  background: rgba(245, 158, 11, 0.15);
+  border: 1px solid var(--mo-gold);
+  color: var(--mo-gold);
+  padding: 0.2rem 0.6rem;
+  border-radius: var(--radius-full);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+/* Track Selector Tabs */
+.audio-track-tabs {
+  display: flex;
+  gap: 0.5rem;
+  overflow-x: auto;
+  padding-bottom: 0.5rem;
+  margin-bottom: 1rem;
+  scrollbar-width: none;
+}
+.audio-track-tabs::-webkit-scrollbar {
+  display: none;
+}
+
+.audio-track-btn {
+  padding: 0.45rem 0.85rem;
+  border-radius: var(--radius-full);
+  font-size: 0.82rem;
+  font-weight: 600;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-color);
+  color: var(--text-secondary);
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.audio-track-btn:hover {
+  background: var(--bg-card-hover);
+  color: var(--text-primary);
+  border-color: var(--primary);
+}
+
+.audio-track-btn.active {
+  background: linear-gradient(135deg, var(--primary), #0284c7);
+  color: #fff;
+  border-color: var(--primary);
+  box-shadow: 0 2px 10px rgba(2, 132, 199, 0.4);
+}
+
+/* Player Controls Bar */
+.audio-player-controls {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  background: rgba(0, 0, 0, 0.3);
+  padding: 0.85rem 1.15rem;
+  border-radius: var(--radius-md);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  flex-wrap: wrap;
+}
+
+.audio-main-play-btn {
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #0284c7, #2563eb);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(2, 132, 199, 0.45);
+  border: none;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  flex-shrink: 0;
+}
+
+.audio-main-play-btn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 6px 18px rgba(2, 132, 199, 0.6);
+}
+
+.audio-skip-btn {
+  background: transparent;
+  color: var(--text-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  padding: 0.35rem 0.55rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.audio-skip-btn:hover {
+  color: #fff;
+  border-color: var(--primary);
+}
+
+.audio-timeline-wrap {
+  flex: 1;
+  min-width: 140px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.audio-progress-bar {
+  width: 100%;
+  height: 6px;
+  -webkit-appearance: none;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 3px;
+  outline: none;
+  cursor: pointer;
+}
+
+.audio-progress-bar::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #38bdf8;
+  cursor: pointer;
+  box-shadow: 0 0 6px rgba(56, 189, 248, 0.7);
+}
+
+.audio-time-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.75rem;
+  font-family: var(--font-mono);
+  color: var(--text-muted);
+}
+
+.audio-speed-group {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  background: rgba(15, 23, 42, 0.6);
+  padding: 0.2rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-color);
+}
+
+.audio-speed-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 0.25rem 0.45rem;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.audio-speed-btn.active {
+  background: var(--primary);
+  color: #fff;
+}
+
+/* Sound Wave Equalizer Animation */
+.audio-equalizer {
+  display: flex;
+  align-items: flex-end;
+  gap: 2px;
+  height: 18px;
+  padding: 0 4px;
+}
+
+.eq-bar {
+  width: 3px;
+  background: #38bdf8;
+  border-radius: 1px;
+  height: 4px;
+  transition: height 0.1s ease;
+}
+
+.audio-equalizer.playing .eq-bar:nth-child(1) { animation: eqPulse 0.6s infinite ease-in-out alternate; }
+.audio-equalizer.playing .eq-bar:nth-child(2) { animation: eqPulse 0.4s infinite ease-in-out alternate 0.1s; }
+.audio-equalizer.playing .eq-bar:nth-child(3) { animation: eqPulse 0.8s infinite ease-in-out alternate 0.2s; }
+.audio-equalizer.playing .eq-bar:nth-child(4) { animation: eqPulse 0.5s infinite ease-in-out alternate 0.3s; }
+
+@keyframes eqPulse {
+  0% { height: 3px; }
+  100% { height: 16px; }
+}
+
+/* Legacy Audio Bar fallback */
 .audio-bar {
   display: flex;
   align-items: center;

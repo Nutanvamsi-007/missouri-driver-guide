@@ -34,7 +34,11 @@
     // Signs state
     signFilter: 'all',
     
-    // Audio Speech Synthesis state
+    // Audio Studio State
+    audioElement: new Audio(),
+    audioTrackId: 'cram',
+    audioSpeed: 1.0,
+    isPlayingAudio: false,
     isSpeaking: false,
     speechUtterance: null,
     
@@ -192,17 +196,7 @@
         </div>
       </div>
 
-      <div class="audio-bar">
-        <button id="tts-play-btn" class="control-btn">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
-          Listen to Chapter
-        </button>
-        <button id="tts-stop-btn" class="control-btn" style="display:none;">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="6" width="12" height="12"></rect></svg>
-          Stop
-        </button>
-        <span class="audio-status" id="audio-status-text">Web Speech Narration Available</span>
-      </div>
+      ${renderAudioStudioMarkup(ch)}
     `;
 
     // Inline diagrams / figures for this chapter if any
@@ -311,12 +305,7 @@
       });
     }
 
-    const ttsPlayBtn = document.getElementById('tts-play-btn');
-    const ttsStopBtn = document.getElementById('tts-stop-btn');
-    if (ttsPlayBtn && ttsStopBtn) {
-      ttsPlayBtn.addEventListener('click', () => speakChapter(ch));
-      ttsStopBtn.addEventListener('click', stopAudio);
-    }
+    bindAudioStudioControls(ch);
 
     const prevBtn = document.getElementById('prev-chapter-btn');
     if (prevBtn) {
@@ -365,29 +354,345 @@
   }
 
   // -------------------------------------------------------------
-  // Text-To-Speech (Web Speech API)
+  // Studio AI Audio Player & Narration Suite
   // -------------------------------------------------------------
-  function speakChapter(ch) {
+  const CHAPTER_AUDIO_TRACKS = {
+    'chapter-1': [
+      {
+        id: 'cram',
+        badge: '⚡ High Yield',
+        title: '3-Min Exam Cram Podcast',
+        voice: 'Guy (AI Neural)',
+        src: 'assets/audio/samples/chapter1_cram_podcast_guy.mp3',
+        desc: 'Fast-paced review of tested permit ages, curfew & GDL restrictions.'
+      },
+      {
+        id: 'andrew',
+        badge: '🎙️ Voice A',
+        title: 'Andrew (Conversational Male)',
+        voice: 'Andrew (AI Neural)',
+        src: 'assets/audio/samples/chapter1_narration_andrew.mp3',
+        desc: 'Natural educator narration curated for smooth listening.'
+      },
+      {
+        id: 'jenny',
+        badge: '🎙️ Voice B',
+        title: 'Jenny (Clear Female)',
+        voice: 'Jenny (AI Neural)',
+        src: 'assets/audio/samples/chapter1_narration_jenny.mp3',
+        desc: 'Warm, articulate teacher narration with natural inflection.'
+      },
+      {
+        id: 'browser',
+        badge: '🤖 Fallback',
+        title: 'Browser Web Speech (Old)',
+        voice: 'Device Synthesizer',
+        src: null,
+        desc: 'Original browser text-to-speech for side-by-side comparison.'
+      }
+    ]
+  };
+
+  function normalizeTextForSpeech(text) {
+    if (!text) return '';
+    return text
+      .replace(/RSMo/gi, 'Revised Statutes of Missouri')
+      .replace(/\bmph\b/gi, 'miles per hour')
+      .replace(/\bBAC\b/g, 'Blood Alcohol Concentration')
+      .replace(/\bGDL\b/g, 'Graduated Driver License')
+      .replace(/\bGVWR\b/g, 'Gross Vehicle Weight Rating')
+      .replace(/\bCDL\b/g, 'Commercial Driver License')
+      .replace(/\bDUI\b/g, 'Driving Under the Influence')
+      .replace(/\bDWI\b/g, 'Driving While Intoxicated')
+      .replace(/\bDOT\b/g, 'Department of Transportation')
+      .replace(/\bDOR\b/g, 'Department of Revenue')
+      .replace(/\bMSHP\b/g, 'Missouri State Highway Patrol')
+      .replace(/\. \. \. \. \./g, '')
+      .replace(/[•\x07*]/g, ' ')
+      .replace(/Page \d+/gi, '')
+      .replace(/\s+/g, ' ')
+      .trim();
+  }
+
+  function getBestSpeechVoice() {
+    if (!('speechSynthesis' in window)) return null;
+    const voices = window.speechSynthesis.getVoices();
+    if (!voices || voices.length === 0) return null;
+    
+    // Prefer Google, Natural, or premium English voices
+    return (
+      voices.find(v => v.lang.startsWith('en') && (v.name.includes('Natural') || v.name.includes('Online'))) ||
+      voices.find(v => v.lang.startsWith('en') && (v.name.includes('Google') || v.name.includes('Neural'))) ||
+      voices.find(v => v.lang.startsWith('en') && (v.name.includes('Samantha') || v.name.includes('Ava') || v.name.includes('Daniel'))) ||
+      voices.find(v => v.lang === 'en-US') ||
+      voices.find(v => v.lang.startsWith('en')) ||
+      voices[0]
+    );
+  }
+
+  function renderAudioStudioMarkup(ch) {
+    const tracks = CHAPTER_AUDIO_TRACKS[ch.id] || [
+      {
+        id: 'browser',
+        badge: '🔊 Audio Narration',
+        title: 'Enhanced Chapter Audio',
+        voice: 'Smart Web Speech',
+        src: null,
+        desc: 'Listen to this chapter with text normalization and enhanced pacing.'
+      }
+    ];
+
+    const currentTrack = tracks.find(t => t.id === state.audioTrackId) || tracks[0];
+
+    return `
+      <div class="audio-studio-card" id="audio-studio-card">
+        <div class="audio-studio-header">
+          <div class="audio-studio-title-group">
+            <div class="audio-studio-icon-badge">🎧</div>
+            <div>
+              <div class="audio-studio-title">Chapter Audio Narration & Exam Cram</div>
+              <div class="audio-studio-sub" id="audio-track-desc">${currentTrack.desc}</div>
+            </div>
+          </div>
+          <div style="display:flex; align-items:center; gap:0.5rem;">
+            <div class="audio-equalizer" id="audio-equalizer">
+              <span class="eq-bar"></span>
+              <span class="eq-bar"></span>
+              <span class="eq-bar"></span>
+              <span class="eq-bar"></span>
+            </div>
+            <span class="audio-studio-badge" id="audio-engine-badge">${currentTrack.src ? '✨ AI Neural' : '🤖 Web Speech'}</span>
+          </div>
+        </div>
+
+        <!-- Track Selection Tabs -->
+        <div class="audio-track-tabs" id="audio-track-tabs">
+          ${tracks.map(t => `
+            <button class="audio-track-btn ${t.id === currentTrack.id ? 'active' : ''}" data-id="${t.id}">
+              <span>${t.badge}</span>
+              <span>${t.title}</span>
+            </button>
+          `).join('')}
+        </div>
+
+        <!-- Player Controls Bar -->
+        <div class="audio-player-controls">
+          <button class="audio-main-play-btn" id="audio-main-play-btn" title="Play / Pause Audio" aria-label="Play / Pause">
+            <svg id="audio-play-icon" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+            <svg id="audio-pause-icon" width="20" height="20" viewBox="0 0 24 24" fill="currentColor" style="display:none;"><rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect></svg>
+          </button>
+
+          <button class="audio-skip-btn" id="audio-skip-back-btn" title="Skip backward 15 seconds">-15s</button>
+          <button class="audio-skip-btn" id="audio-skip-fwd-btn" title="Skip forward 15 seconds">+15s</button>
+
+          <div class="audio-timeline-wrap">
+            <input type="range" class="audio-progress-bar" id="audio-progress-bar" min="0" max="100" value="0" step="0.1" />
+            <div class="audio-time-row">
+              <span id="audio-current-time">0:00</span>
+              <span id="audio-total-duration">--:--</span>
+            </div>
+          </div>
+
+          <div class="audio-speed-group">
+            <button class="audio-speed-btn ${state.audioSpeed === 1.0 ? 'active' : ''}" data-speed="1.0">1x</button>
+            <button class="audio-speed-btn ${state.audioSpeed === 1.25 ? 'active' : ''}" data-speed="1.25">1.25x</button>
+            <button class="audio-speed-btn ${state.audioSpeed === 1.5 ? 'active' : ''}" data-speed="1.5">1.5x</button>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  function formatAudioTime(seconds) {
+    if (isNaN(seconds) || seconds < 0) return '0:00';
+    const m = Math.floor(seconds / 60);
+    const s = Math.floor(seconds % 60);
+    return `${m}:${s < 10 ? '0' : ''}${s}`;
+  }
+
+  function updateAudioUIState() {
+    const playIcon = document.getElementById('audio-play-icon');
+    const pauseIcon = document.getElementById('audio-pause-icon');
+    const eq = document.getElementById('audio-equalizer');
+    const isPlaying = state.isPlayingAudio || state.isSpeaking;
+
+    if (playIcon) playIcon.style.display = isPlaying ? 'none' : 'block';
+    if (pauseIcon) pauseIcon.style.display = isPlaying ? 'block' : 'none';
+    if (eq) eq.classList.toggle('playing', isPlaying);
+  }
+
+  function bindAudioStudioControls(ch) {
+    const tracks = CHAPTER_AUDIO_TRACKS[ch.id] || [
+      {
+        id: 'browser',
+        badge: '🔊 Audio Narration',
+        title: 'Enhanced Chapter Audio',
+        voice: 'Smart Web Speech',
+        src: null,
+        desc: 'Listen to this chapter with text normalization and enhanced pacing.'
+      }
+    ];
+
+    let currentTrack = tracks.find(t => t.id === state.audioTrackId) || tracks[0];
+
+    const playBtn = document.getElementById('audio-main-play-btn');
+    const skipBackBtn = document.getElementById('audio-skip-back-btn');
+    const skipFwdBtn = document.getElementById('audio-skip-fwd-btn');
+    const progressBar = document.getElementById('audio-progress-bar');
+    const currentTimeEl = document.getElementById('audio-current-time');
+    const totalDurationEl = document.getElementById('audio-total-duration');
+    const descEl = document.getElementById('audio-track-desc');
+    const badgeEl = document.getElementById('audio-engine-badge');
+
+    // Setup Audio Element for MP3
+    const audio = state.audioElement;
+    if (currentTrack.src) {
+      if (audio.src !== window.location.origin + '/' + currentTrack.src) {
+        audio.src = currentTrack.src;
+        audio.playbackRate = state.audioSpeed;
+      }
+    }
+
+    // Audio metadata loaded
+    audio.onloadedmetadata = () => {
+      if (totalDurationEl && !isNaN(audio.duration)) {
+        totalDurationEl.textContent = formatAudioTime(audio.duration);
+      }
+    };
+
+    // Time update
+    audio.ontimeupdate = () => {
+      if (!audio.duration) return;
+      const pct = (audio.currentTime / audio.duration) * 100;
+      if (progressBar) progressBar.value = pct;
+      if (currentTimeEl) currentTimeEl.textContent = formatAudioTime(audio.currentTime);
+      if (totalDurationEl && !isNaN(audio.duration)) totalDurationEl.textContent = formatAudioTime(audio.duration);
+    };
+
+    audio.onended = () => {
+      state.isPlayingAudio = false;
+      updateAudioUIState();
+      if (progressBar) progressBar.value = 0;
+      if (currentTimeEl) currentTimeEl.textContent = '0:00';
+    };
+
+    // Scrubber seek
+    if (progressBar) {
+      progressBar.addEventListener('input', (e) => {
+        if (currentTrack.src && audio.duration) {
+          const seekTo = (e.target.value / 100) * audio.duration;
+          audio.currentTime = seekTo;
+        }
+      });
+    }
+
+    // Skip Buttons
+    if (skipBackBtn) {
+      skipBackBtn.addEventListener('click', () => {
+        if (currentTrack.src) {
+          audio.currentTime = Math.max(0, audio.currentTime - 15);
+        }
+      });
+    }
+    if (skipFwdBtn) {
+      skipFwdBtn.addEventListener('click', () => {
+        if (currentTrack.src && audio.duration) {
+          audio.currentTime = Math.min(audio.duration, audio.currentTime + 15);
+        }
+      });
+    }
+
+    // Speed Controls
+    document.querySelectorAll('.audio-speed-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const speed = parseFloat(btn.dataset.speed);
+        state.audioSpeed = speed;
+        audio.playbackRate = speed;
+        document.querySelectorAll('.audio-speed-btn').forEach(b => {
+          b.classList.toggle('active', parseFloat(b.dataset.speed) === speed);
+        });
+      });
+    });
+
+    // Track Selection Tabs
+    document.querySelectorAll('.audio-track-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const trackId = btn.dataset.id;
+        state.audioTrackId = trackId;
+        stopAudio();
+
+        document.querySelectorAll('.audio-track-btn').forEach(b => {
+          b.classList.toggle('active', b.dataset.id === trackId);
+        });
+
+        currentTrack = tracks.find(t => t.id === trackId) || tracks[0];
+        if (descEl) descEl.textContent = currentTrack.desc;
+        if (badgeEl) badgeEl.textContent = currentTrack.src ? '✨ AI Neural' : '🤖 Web Speech';
+
+        if (currentTrack.src) {
+          audio.src = currentTrack.src;
+          audio.playbackRate = state.audioSpeed;
+          audio.currentTime = 0;
+          if (progressBar) progressBar.value = 0;
+          if (currentTimeEl) currentTimeEl.textContent = '0:00';
+          if (totalDurationEl) totalDurationEl.textContent = '--:--';
+        } else {
+          if (totalDurationEl) totalDurationEl.textContent = `~${ch.read_minutes} min`;
+        }
+      });
+    });
+
+    // Main Play / Pause Button
+    if (playBtn) {
+      playBtn.addEventListener('click', () => {
+        if (currentTrack.src) {
+          // Play pre-rendered AI MP3
+          if (state.isPlayingAudio) {
+            audio.pause();
+            state.isPlayingAudio = false;
+          } else {
+            stopAudio(); // Stop any speech synthesis
+            audio.play().then(() => {
+              state.isPlayingAudio = true;
+              updateAudioUIState();
+            }).catch(err => {
+              console.warn("Audio play prevented:", err);
+            });
+          }
+          updateAudioUIState();
+        } else {
+          // Play Web Speech API fallback with enhanced text normalization
+          if (state.isSpeaking) {
+            stopAudio();
+          } else {
+            speakEnhancedChapter(ch);
+          }
+        }
+      });
+    }
+
+    updateAudioUIState();
+  }
+
+  function speakEnhancedChapter(ch) {
     if (!('speechSynthesis' in window)) {
       alert("Text-to-speech is not supported by your browser.");
       return;
     }
     stopAudio();
 
-    const ttsPlayBtn = document.getElementById('tts-play-btn');
-    const ttsStopBtn = document.getElementById('tts-stop-btn');
-    const statusText = document.getElementById('audio-status-text');
+    const normalized = normalizeTextForSpeech(ch.full_text).substring(0, 5000);
+    const textToRead = `${ch.title}. ${ch.summary}. ${normalized}`;
+    const utterance = new SpeechSynthesisUtterance(textToRead);
 
-    const cleanText = `${ch.title}. ` + ch.full_text.replace(/[•\x07*]/g, ' ').substring(0, 4000);
-    const utterance = new SpeechSynthesisUtterance(cleanText);
-    utterance.rate = 1.0;
-    utterance.pitch = 1.0;
+    const bestVoice = getBestSpeechVoice();
+    if (bestVoice) utterance.voice = bestVoice;
+    utterance.rate = state.audioSpeed || 1.0;
+    utterance.pitch = 1.02;
 
     utterance.onstart = () => {
       state.isSpeaking = true;
-      if (ttsPlayBtn) ttsPlayBtn.style.display = 'none';
-      if (ttsStopBtn) ttsStopBtn.style.display = 'inline-flex';
-      if (statusText) statusText.textContent = '🔊 Reading chapter aloud...';
+      updateAudioUIState();
     };
 
     utterance.onend = utterance.onerror = () => {
@@ -399,16 +704,15 @@
   }
 
   function stopAudio() {
+    if (state.audioElement) {
+      state.audioElement.pause();
+    }
     if ('speechSynthesis' in window && window.speechSynthesis.speaking) {
       window.speechSynthesis.cancel();
     }
+    state.isPlayingAudio = false;
     state.isSpeaking = false;
-    const ttsPlayBtn = document.getElementById('tts-play-btn');
-    const ttsStopBtn = document.getElementById('tts-stop-btn');
-    const statusText = document.getElementById('audio-status-text');
-    if (ttsPlayBtn) ttsPlayBtn.style.display = 'inline-flex';
-    if (ttsStopBtn) ttsStopBtn.style.display = 'none';
-    if (statusText) statusText.textContent = 'Web Speech Narration Available';
+    updateAudioUIState();
   }
 
   // -------------------------------------------------------------

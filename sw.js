@@ -3,7 +3,7 @@
  * Implements Network-First for HTML navigation and Cache-First for static assets.
  */
 
-const CACHE_NAME = 'mo-driver-guide-v2026.1';
+const CACHE_NAME = 'mo-driver-guide-v2026.2';
 
 // Core Application Shell assets pre-cached immediately upon install
 const PRECACHE_ASSETS = [
@@ -54,6 +54,11 @@ self.addEventListener('fetch', (event) => {
   // Only handle HTTP/HTTPS GET requests
   if (request.method !== 'GET') return;
   if (!url.protocol.startsWith('http')) return;
+
+  // Bypass service worker for audio streaming / Range requests so iOS Safari and Chrome can seek smoothly
+  if (request.headers.has('range') || url.pathname.endsWith('.mp3')) {
+    return;
+  }
 
   // 1. Navigation requests (HTML document): Network-First, fallback to Cache
   if (request.mode === 'navigate') {
