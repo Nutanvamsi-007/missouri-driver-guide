@@ -376,10 +376,10 @@
         {
           id: 'narration',
           badge: '🎙️ Full Lesson',
-          title: 'Chapter Narration',
+          title: 'Full Chapter Unabridged',
           voice: 'Jenny (AI Neural)',
           src: `assets/audio/chapters/${ch.id}_narration.mp3`,
-          desc: 'Comprehensive, natural educator narration covering core handbook concepts.'
+          desc: 'Complete unabridged chapter audiobook covering every section, rule, and statute.'
         },
         {
           id: 'browser',
@@ -665,6 +665,9 @@
     updateAudioUIState();
   }
 
+  let speechQueue = [];
+  let speechQueueIndex = 0;
+
   function speakEnhancedChapter(ch) {
     if (!('speechSynthesis' in window)) {
       alert("Text-to-speech is not supported by your browser.");
@@ -672,35 +675,67 @@
     }
     stopAudio();
 
-    const normalized = normalizeTextForSpeech(ch.full_text).substring(0, 5000);
-    const textToRead = `${ch.title}. ${ch.summary}. ${normalized}`;
-    const utterance = new SpeechSynthesisUtterance(textToRead);
+    const normalized = normalizeTextForSpeech(ch.full_text);
+    const fullText = `Chapter ${ch.number > 0 ? ch.number : ''}: ${ch.title}. ${ch.summary}. ${normalized}`;
 
-    const bestVoice = getBestSpeechVoice();
-    if (bestVoice) utterance.voice = bestVoice;
-    utterance.rate = state.audioSpeed || 1.0;
-    utterance.pitch = 1.02;
+    // Split text into ~300-char sentence-based chunks to prevent browser Web Speech freeze bugs
+    const chunks = [];
+    const sentences = fullText.split(/(?<=[.!?])\s+/);
+    let cur = '';
+    for (const s of sentences) {
+      if ((cur + ' ' + s).length > 350 && cur) {
+        chunks.push(cur.trim());
+        cur = s;
+      } else {
+        cur += (cur ? ' ' : '') + s;
+      }
+    }
+    if (cur.trim()) chunks.push(cur.trim());
 
-    utterance.onstart = () => {
-      state.isSpeaking = true;
-      updateAudioUIState();
-    };
+    speechQueue = chunks;
+    speechQueueIndex = 0;
+    state.isSpeaking = true;
+    updateAudioUIState();
 
-    utterance.onend = utterance.onerror = () => {
-      stopAudio();
-    };
+    function speakNextChunk() {
+      if (!state.isSpeaking || speechQueueIndex >= speechQueue.length) {
+        stopAudio();
+        return;
+      }
 
-    state.speechUtterance = utterance;
-    window.speechSynthesis.speak(utterance);
+      const chunkText = speechQueue[speechQueueIndex];
+      const utterance = new SpeechSynthesisUtterance(chunkText);
+      const bestVoice = getBestSpeechVoice();
+      if (bestVoice) utterance.voice = bestVoice;
+      utterance.rate = state.audioSpeed || 1.0;
+      utterance.pitch = 1.02;
+
+      utterance.onend = () => {
+        speechQueueIndex++;
+        speakNextChunk();
+      };
+
+      utterance.onerror = (e) => {
+        console.warn("Speech error in chunk:", e);
+        stopAudio();
+      };
+
+      state.speechUtterance = utterance;
+      window.speechSynthesis.speak(utterance);
+    }
+
+    speakNextChunk();
   }
 
   function stopAudio() {
     if (state.audioElement) {
       state.audioElement.pause();
     }
-    if ('speechSynthesis' in window && window.speechSynthesis.speaking) {
+    if ('speechSynthesis' in window) {
       window.speechSynthesis.cancel();
     }
+    speechQueue = [];
+    speechQueueIndex = 0;
     state.isPlayingAudio = false;
     state.isSpeaking = false;
     updateAudioUIState();
