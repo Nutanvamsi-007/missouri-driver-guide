@@ -960,6 +960,47 @@ h1, h2, h3, h4, .brand-name, .hero-title, .stat-val {
   margin-bottom: 0.5rem;
 }
 
+/* Re-parsed structured content */
+.chapter-body ul.doc-list {
+  margin: 0 0 1.1rem 1.4rem;
+  padding-left: 0.4rem;
+  list-style: disc;
+}
+.chapter-body ul.doc-list.lvl-2 {
+  margin: -0.2rem 0 1rem 1.2rem;
+  list-style: circle;
+}
+.chapter-body ul.doc-list > ul.doc-list { margin-top: 0; }
+.chapter-body ul.doc-list li::marker { color: var(--text-accent); }
+.chapter-body li strong, .chapter-body p strong { font-weight: 700; color: var(--text-primary); }
+.chapter-body p.doc-p.indent-1 { margin-left: 1.4rem; }
+.chapter-body p.doc-p.indent-2 { margin-left: 2.6rem; }
+.chapter-body h3 + ul.doc-list, .chapter-body h3 + p { margin-top: 0; }
+.chapter-body .page-pdf-ref {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  margin-left: 0.5rem;
+}
+.chapter-body .doc-table-figure {
+  margin: 0.5rem 0 1.5rem;
+  padding: 0.75rem;
+  background: #fff;
+  border-radius: 12px;
+  border: 1px solid var(--border-color);
+  overflow-x: auto;
+  text-align: center;
+}
+.chapter-body .doc-table-figure img {
+  max-width: 100%;
+  height: auto;
+  display: inline-block;
+}
+@media (max-width: 640px) {
+  .chapter-body ul.doc-list { margin-left: 0.6rem; }
+  .chapter-body p.doc-p.indent-1 { margin-left: 0.8rem; }
+  .chapter-body p.doc-p.indent-2 { margin-left: 1.4rem; }
+}
+
 /* Callout Boxes */
 .callout-box {
   padding: 1.2rem 1.4rem;

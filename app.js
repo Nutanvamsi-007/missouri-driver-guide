@@ -224,55 +224,11 @@
     // Body content rendered by page
     html += `<div class="chapter-body" style="font-size:${state.fontSize}px;">`;
 
-    ch.pages.forEach(pg => {
-      html += `
-        <div class="page-mirror-banner">
-          <div>
-            <strong>Manual Page ${pg.book_page}</strong>
-            <span style="font-size:0.8rem; color:var(--text-secondary); margin-left:0.5rem;">(PDF Page ${pg.page_number})</span>
-          </div>
-          <button class="control-btn view-mirror-btn" data-page="${pg.page_number}" data-title="${ch.title}">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
-            View Official PDF Page
-          </button>
-        </div>
-      `;
-
-      // Render blocks
-      pg.blocks.forEach(b => {
-        const text = escapeHtml(b.text);
-        if (b.is_tip) {
-          html += `
-            <div class="callout-box tip">
-              <div class="callout-title">💡 State Examiner Tip</div>
-              <div>${text.replace(/^Tip!\s*/i, '')}</div>
-            </div>
-          `;
-        } else if (b.is_warning) {
-          html += `
-            <div class="callout-box warning">
-              <div class="callout-title">⚠️ Mandatory Rule & Penalty</div>
-              <div>${text}</div>
-            </div>
-          `;
-        } else if (b.is_note) {
-          html += `
-            <div class="callout-box note">
-              <div class="callout-title">ℹ️ Important Notice</div>
-              <div>${text}</div>
-            </div>
-          `;
-        } else if (b.is_heading) {
-          html += `<h3>${escapeHtml(b.first_line)}</h3>`;
-          const remainder = b.text.substring(b.first_line.length).trim();
-          if (remainder) {
-            html += `<p>${formatParagraph(remainder)}</p>`;
-          }
-        } else {
-          html += `<p>${formatParagraph(text)}</p>`;
-        }
-      });
-    });
+    if (Array.isArray(ch.content) && ch.content.length) {
+      html += renderStructuredContent(ch);
+    } else {
+      html += renderLegacyPages(ch);
+    }
 
     html += `</div>`;
 
@@ -335,6 +291,133 @@
         openPdfMirror(parseInt(btn.dataset.page, 10), btn.dataset.title);
       });
     });
+  }
+
+  function inlineFormat(str) {
+    return escapeHtml(str).replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+  }
+
+  // Renders the re-parsed structured content (headings, paragraphs, nested lists, callouts, tables)
+  function renderStructuredContent(ch) {
+    const pageMap = {};
+    ch.pages.forEach(pg => { pageMap[pg.page_number] = pg; });
+    let html = '';
+    let lastPage = null;
+    let depth = 0; // currently open <ul> depth
+
+    const closeLists = () => {
+      while (depth > 0) { html += '</ul>'; depth--; }
+    };
+
+    ch.content.forEach((it, idx) => {
+      if (it.page !== lastPage) {
+        closeLists();
+        const pg = pageMap[it.page];
+        if (pg) {
+          html += `
+            <div class="page-mirror-banner">
+              <div>
+                <strong>Manual Page ${pg.book_page}</strong>
+                <span class="page-pdf-ref">(PDF Page ${pg.page_number})</span>
+              </div>
+              <button class="control-btn view-mirror-btn" data-page="${pg.page_number}" data-title="${ch.title}">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                View Official PDF Page
+              </button>
+            </div>`;
+        }
+        lastPage = it.page;
+      }
+
+      if (it.type === 'li') {
+        const lvl = it.level || 1;
+        while (depth < lvl) { html += `<ul class="doc-list lvl-${depth + 1}">`; depth++; }
+        while (depth > lvl) { html += '</ul>'; depth--; }
+        html += `<li>${inlineFormat(it.text)}</li>`;
+        return;
+      }
+      closeLists();
+
+      if (it.type === 'h') {
+        html += `<h3>${inlineFormat(it.text)}</h3>`;
+      } else if (it.type === 'callout') {
+        const cfg = {
+          tip: ['tip', '💡 State Examiner Tip'],
+          warning: ['warning', '⚠️ Mandatory Rule & Penalty'],
+          note: ['note', 'ℹ️ Important Notice']
+        }[it.kind] || ['note', 'ℹ️ Important Notice'];
+        html += `
+          <div class="callout-box ${cfg[0]}">
+            <div class="callout-title">${cfg[1]}</div>
+            <div>${inlineFormat(it.text)}</div>
+          </div>`;
+      } else if (it.type === 'table') {
+        html += `
+          <figure class="doc-table-figure">
+            <img src="${it.image}" alt="${escapeHtml(it.text)}" loading="lazy">
+          </figure>`;
+      } else {
+        html += `<p class="doc-p indent-${it.indent || 0}">${inlineFormat(it.text)}</p>`;
+      }
+    });
+    closeLists();
+    return html;
+  }
+
+  // Fallback for chapters without structured content (index / contacts)
+  function renderLegacyPages(ch) {
+    let html = '';
+    ch.pages.forEach(pg => {
+      html += `
+        <div class="page-mirror-banner">
+          <div>
+            <strong>Manual Page ${pg.book_page}</strong>
+            <span style="font-size:0.8rem; color:var(--text-secondary); margin-left:0.5rem;">(PDF Page ${pg.page_number})</span>
+          </div>
+          <button class="control-btn view-mirror-btn" data-page="${pg.page_number}" data-title="${ch.title}">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+            View Official PDF Page
+          </button>
+        </div>
+      `;
+
+      // Render blocks
+      pg.blocks.forEach(b => {
+        const text = escapeHtml(b.text);
+        if (b.is_tip) {
+          html += `
+            <div class="callout-box tip">
+              <div class="callout-title">💡 State Examiner Tip</div>
+              <div>${text.replace(/^Tip!\s*/i, '')}</div>
+            </div>
+          `;
+        } else if (b.is_warning) {
+          html += `
+            <div class="callout-box warning">
+              <div class="callout-title">⚠️ Mandatory Rule & Penalty</div>
+              <div>${text}</div>
+            </div>
+          `;
+        } else if (b.is_note) {
+          html += `
+            <div class="callout-box note">
+              <div class="callout-title">ℹ️ Important Notice</div>
+              <div>${text}</div>
+            </div>
+          `;
+        } else if (b.is_heading) {
+          html += `<h3>${escapeHtml(b.first_line)}</h3>`;
+          const remainder = b.text.substring(b.first_line.length).trim();
+          if (remainder) {
+            html += `<p>${formatParagraph(remainder)}</p>`;
+          }
+        } else {
+          html += `<p>${formatParagraph(text)}</p>`;
+        }
+      });
+    });
+
+    return html;
   }
 
   function formatParagraph(text) {
@@ -1314,22 +1397,26 @@
         });
       }
 
-      // Search in text blocks
-      ch.pages.forEach(pg => {
-        pg.blocks.forEach(b => {
-          const lower = b.text.toLowerCase();
+      // Search in text content (prefer structured content for complete sentences)
+      if (Array.isArray(ch.content) && ch.content.length) {
+        const pageMap = {};
+        ch.pages.forEach(pg => { pageMap[pg.page_number] = pg; });
+        ch.content.forEach(it => {
+          const raw = (it.text || '').replace(/\*\*/g, '');
+          const lower = raw.toLowerCase();
           const idx = lower.indexOf(q);
           if (idx !== -1 && matches.length < 25) {
             const start = Math.max(0, idx - 40);
-            const end = Math.min(b.text.length, idx + q.length + 60);
-            let snippet = b.text.substring(start, end).replace(/\n/g, ' ');
+            const end = Math.min(raw.length, idx + q.length + 60);
+            let snippet = raw.substring(start, end).replace(/\n/g, ' ');
             if (start > 0) snippet = '...' + snippet;
-            if (end < b.text.length) snippet += '...';
+            if (end < raw.length) snippet += '...';
 
+            const pg = pageMap[it.page];
             matches.push({
               type: 'text',
-              title: `${ch.title} (Page ${pg.page_number})`,
-              subtitle: b.first_line !== b.text ? b.first_line : `Manual page ${pg.book_page}`,
+              title: `${ch.title} (Page ${it.page})`,
+              subtitle: pg ? `Manual page ${pg.book_page}` : `Chapter ${ch.number}`,
               snippet: snippet,
               query: q,
               action: () => {
@@ -1340,7 +1427,34 @@
             });
           }
         });
-      });
+      } else {
+        ch.pages.forEach(pg => {
+          pg.blocks.forEach(b => {
+            const lower = b.text.toLowerCase();
+            const idx = lower.indexOf(q);
+            if (idx !== -1 && matches.length < 25) {
+              const start = Math.max(0, idx - 40);
+              const end = Math.min(b.text.length, idx + q.length + 60);
+              let snippet = b.text.substring(start, end).replace(/\n/g, ' ');
+              if (start > 0) snippet = '...' + snippet;
+              if (end < b.text.length) snippet += '...';
+
+              matches.push({
+                type: 'text',
+                title: `${ch.title} (Page ${pg.page_number})`,
+                subtitle: b.first_line !== b.text ? b.first_line : `Manual page ${pg.book_page}`,
+                snippet: snippet,
+                query: q,
+                action: () => {
+                  closeSearchModal();
+                  state.currentChapterId = ch.id;
+                  switchTab('reader');
+                }
+              });
+            }
+          });
+        });
+      }
     });
 
     if (matches.length === 0) {
