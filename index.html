@@ -51,7 +51,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Outfit:wght@600;700;800;900&display=swap" rel="stylesheet" />
 
   <!-- Stylesheet -->
-  <link rel="stylesheet" href="styles.css?v=2026.5" />
+  <link rel="stylesheet" href="styles.css?v=2026.6" />
 
   <!-- Schema.org Educational & App Structured Data (JSON-LD) -->
   <script type="application/ld+json">
@@ -84,7 +84,8 @@
   </script>
 
   <!-- Preload core data -->
-  <script src="data.js?v=2026.5"></script>
+  <script src="data.js?v=2026.6"></script>
+  <script src="exam_flashcards.js?v=2026.6"></script>
 </head>
 <body>
 
@@ -265,12 +266,16 @@
         <div>
           <h2 style="font-size:1.75rem; font-weight:800; margin-bottom:0.25rem;">Missouri Road Signs Lab & 3D Flashcards</h2>
           <p style="color:var(--text-secondary); font-size:0.92rem;">
-            Click or tap any card to flip and test your knowledge of shapes, regulatory signs, warnings, and work zones.
+            Click or tap any card to flip and test your knowledge of shapes, regulatory signs, warnings, and work zones. Try the <strong>🎯 Exam Q&amp;A Drill</strong> to practice questions the way they're asked on the real test.
           </p>
         </div>
         <div class="signs-category-pills" id="signs-category-pills">
           <!-- Injected via app.js -->
         </div>
+      </div>
+
+      <div class="exam-drill-toolbar" id="exam-drill-toolbar" hidden>
+        <!-- Injected via app.js when the Exam Q&A Drill is selected -->
       </div>
 
       <div class="flashcards-grid" id="flashcards-grid">
@@ -528,6 +533,6 @@
     </div>
   </footer>
 
-  <script src="app.js?v=2026.5"></script>
+  <script src="app.js?v=2026.6"></script>
 </body>
 </html>

@@ -1120,6 +1120,7 @@
     if (!cardsGrid) return;
 
     const categories = [
+      { id: 'exam', label: '🎯 Exam Q&A Drill' },
       { id: 'all', label: 'All Signs & Graphics' },
       { id: 'regulatory', label: 'Regulatory Signs' },
       { id: 'warning', label: 'Warning Signs' },
@@ -1143,6 +1144,13 @@
         pillsContainer.appendChild(btn);
       });
     }
+
+    const toolbar = document.getElementById('exam-drill-toolbar');
+    if (state.signFilter === 'exam') {
+      renderExamDrill(cardsGrid, toolbar);
+      return;
+    }
+    if (toolbar) toolbar.hidden = true;
 
     const filtered = state.signFilter === 'all' 
       ? DATA.figures 
@@ -1171,6 +1179,165 @@
       `;
 
       card.addEventListener('click', () => {
+        card.classList.toggle('flipped');
+      });
+
+      cardsGrid.appendChild(card);
+    });
+  }
+
+  // Exam-style multiple-choice flashcards (window.MISSOURI_EXAM_FLASHCARDS from exam_flashcards.js)
+  const EXAM_TOPICS = [
+    { id: 'all', label: 'All Topics' },
+    { id: 'colors', label: '🎨 Sign Colors' },
+    { id: 'shapes', label: '🔷 Sign Shapes' },
+    { id: 'markings', label: '🛣️ Pavement Markings' },
+    { id: 'signals', label: '🚦 Traffic Signals' },
+    { id: 'meanings', label: '🪧 Sign Meanings' },
+    { id: 'workrail', label: '🚧 Work Zones & Railroads' },
+    { id: 'speed', label: '⏱️ Speed Limits' }
+  ];
+  const examDrill = {
+    topic: 'all',
+    hideMastered: false,
+    order: null,
+    mastered: new Set(JSON.parse(localStorage.getItem('mo_exam_cards_mastered') || '[]'))
+  };
+
+  function saveExamMastery() {
+    localStorage.setItem('mo_exam_cards_mastered', JSON.stringify([...examDrill.mastered]));
+  }
+
+  function renderExamDrill(cardsGrid, toolbar) {
+    const deck = window.MISSOURI_EXAM_FLASHCARDS || [];
+    if (!toolbar) return;
+    toolbar.hidden = false;
+
+    const inTopic = deck.filter(c => examDrill.topic === 'all' || c.topic === examDrill.topic);
+    const masteredCount = inTopic.filter(c => examDrill.mastered.has(c.id)).length;
+    const pct = inTopic.length ? Math.round((masteredCount / inTopic.length) * 100) : 0;
+
+    toolbar.innerHTML = `
+      <div class="exam-drill-topics">
+        ${EXAM_TOPICS.map(t => `<button class="exam-topic-btn ${examDrill.topic === t.id ? 'active' : ''}" data-topic="${t.id}">${t.label}</button>`).join('')}
+      </div>
+      <div class="exam-drill-controls">
+        <div class="exam-drill-progress" title="Cards you marked as 'Got it'">
+          <div class="exam-drill-progress-label"><strong>${masteredCount}</strong> / ${inTopic.length} mastered</div>
+          <div class="exam-drill-progress-track"><div class="exam-drill-progress-fill" style="width:${pct}%"></div></div>
+        </div>
+        <button class="control-btn" id="exam-shuffle-btn">🔀 Shuffle</button>
+        <button class="control-btn ${examDrill.hideMastered ? 'active' : ''}" id="exam-hide-btn">${examDrill.hideMastered ? '👁️ Show all' : '🙈 Hide mastered'}</button>
+        <button class="control-btn" id="exam-reset-btn">↺ Reset</button>
+      </div>
+      <p class="exam-drill-hint">Pick an answer like on the real test — the card flips to show the answer and the rule from the official guide.</p>
+    `;
+
+    toolbar.querySelectorAll('.exam-topic-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        examDrill.topic = btn.dataset.topic;
+        renderExamDrill(cardsGrid, toolbar);
+      });
+    });
+    toolbar.querySelector('#exam-shuffle-btn').addEventListener('click', () => {
+      const ids = deck.map(c => c.id);
+      for (let i = ids.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [ids[i], ids[j]] = [ids[j], ids[i]];
+      }
+      examDrill.order = ids;
+      renderExamDrill(cardsGrid, toolbar);
+    });
+    toolbar.querySelector('#exam-hide-btn').addEventListener('click', () => {
+      examDrill.hideMastered = !examDrill.hideMastered;
+      renderExamDrill(cardsGrid, toolbar);
+    });
+    toolbar.querySelector('#exam-reset-btn').addEventListener('click', () => {
+      inTopic.forEach(c => examDrill.mastered.delete(c.id));
+      saveExamMastery();
+      renderExamDrill(cardsGrid, toolbar);
+    });
+
+    let cards = inTopic.slice();
+    if (examDrill.order) {
+      const rank = new Map(examDrill.order.map((id, i) => [id, i]));
+      cards.sort((a, b) => rank.get(a.id) - rank.get(b.id));
+    }
+    if (examDrill.hideMastered) cards = cards.filter(c => !examDrill.mastered.has(c.id));
+
+    cardsGrid.innerHTML = '';
+    if (!cards.length) {
+      cardsGrid.innerHTML = `<div class="exam-drill-empty">🎉 You've mastered every card in this topic! Tap <strong>Show all</strong> or <strong>Reset</strong> to review again.</div>`;
+      return;
+    }
+
+    const letters = ['A', 'B', 'C', 'D', 'E'];
+    const topicLabel = id => (EXAM_TOPICS.find(t => t.id === id) || {}).label || id;
+
+    cards.forEach(c => {
+      const isMastered = examDrill.mastered.has(c.id);
+      const card = document.createElement('div');
+      card.className = `flip-card exam-card ${c.image ? 'has-image' : ''} ${isMastered ? 'mastered' : ''}`;
+      card.innerHTML = `
+        <div class="flip-card-inner">
+          <div class="flip-card-front exam-card-front">
+            <div class="exam-card-topline">
+              <span class="exam-card-topic">${topicLabel(c.topic)}</span>
+              ${isMastered ? '<span class="exam-card-check">✓ Mastered</span>' : ''}
+            </div>
+            ${c.image ? `<div class="exam-card-image"><img src="${c.image}?v=2026.2" alt="Sign for question" loading="lazy" /></div>` : ''}
+            <div class="exam-card-question">${escapeHtml(c.q)}</div>
+            <div class="exam-card-choices">
+              ${c.choices.map((ch, i) => `<button class="exam-choice" data-idx="${i}"><span class="exam-choice-letter">${letters[i]}</span><span>${escapeHtml(ch)}</span></button>`).join('')}
+            </div>
+          </div>
+          <div class="flip-card-back exam-card-back">
+            <div class="exam-result-badge"></div>
+            <div class="exam-back-q">${escapeHtml(c.q)}</div>
+            <div class="exam-back-answer"><span>${letters[c.answer]}</span> ${escapeHtml(c.choices[c.answer])}</div>
+            <div class="flip-back-desc">${escapeHtml(c.explain)}</div>
+            <div class="exam-back-actions">
+              <button class="exam-mark-btn got" data-act="got">✓ Got it</button>
+              <button class="exam-mark-btn again" data-act="again">↺ Review again</button>
+            </div>
+            <div class="flip-back-page">📖 Missouri Driver Guide · PDF page ${c.page}</div>
+          </div>
+        </div>
+      `;
+
+      const badge = card.querySelector('.exam-result-badge');
+      card.querySelectorAll('.exam-choice').forEach(btn => {
+        btn.addEventListener('click', e => {
+          e.stopPropagation();
+          const idx = parseInt(btn.dataset.idx, 10);
+          const correct = idx === c.answer;
+          card.querySelectorAll('.exam-choice').forEach(b => {
+            const bi = parseInt(b.dataset.idx, 10);
+            b.classList.toggle('correct', bi === c.answer);
+            b.classList.toggle('wrong', bi === idx && !correct);
+          });
+          badge.className = `exam-result-badge ${correct ? 'ok' : 'bad'}`;
+          badge.textContent = correct ? '✅ Correct!' : `❌ You picked ${letters[idx]}`;
+          setTimeout(() => card.classList.add('flipped'), correct ? 450 : 900);
+        });
+      });
+
+      card.querySelectorAll('.exam-mark-btn').forEach(btn => {
+        btn.addEventListener('click', e => {
+          e.stopPropagation();
+          if (btn.dataset.act === 'got') examDrill.mastered.add(c.id);
+          else examDrill.mastered.delete(c.id);
+          saveExamMastery();
+          card.classList.remove('flipped');
+          setTimeout(() => renderExamDrill(cardsGrid, toolbar), 350);
+        });
+      });
+
+      card.addEventListener('click', () => {
+        if (!card.classList.contains('flipped') && !badge.textContent) {
+          badge.className = 'exam-result-badge peek';
+          badge.textContent = '👀 Answer revealed';
+        }
         card.classList.toggle('flipped');
       });
 

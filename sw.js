@@ -3,7 +3,7 @@
  * Implements Network-First for HTML navigation and Cache-First for static assets.
  */
 
-const CACHE_NAME = 'mo-driver-guide-v2026.5';
+const CACHE_NAME = 'mo-driver-guide-v2026.6';
 
 // Core Application Shell assets pre-cached immediately upon install
 const PRECACHE_ASSETS = [
@@ -12,6 +12,7 @@ const PRECACHE_ASSETS = [
   './styles.css',
   './app.js',
   './data.js',
+  './exam_flashcards.js',
   './manifest.webmanifest',
   './favicon.svg',
   './favicon.ico',
